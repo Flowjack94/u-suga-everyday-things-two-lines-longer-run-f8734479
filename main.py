@@ -23,19 +23,31 @@ LINE_2 = "The sunbed fits because heat and a timer do the browning, but bread ca
 ENTRY = LINE_1 + "\n" + LINE_2
 OUTPUT_PATH = Path("/output/entry.txt")
 
+# Competition gate (Everyday Things, Two Lines, Longer Run):
+# exactly 2 lines, 1-400 characters total, no trailing whitespace.
+EXPECTED_LINES = 2
+MIN_ENTRY_CHARS = 1
+MAX_ENTRY_CHARS = 400
+
 
 def validate(text: str) -> None:
     """Gate-check the entry before anything is written."""
     if not text or not text.strip():
         raise SystemExit("ERROR: entry is empty or only whitespace")
     lines = text.split("\n")
-    if len(lines) != 2:
-        raise SystemExit(f"ERROR: entry must have exactly 2 lines, got {len(lines)}")
+    if len(lines) != EXPECTED_LINES:
+        raise SystemExit(
+            f"ERROR: entry must have exactly {EXPECTED_LINES} lines, "
+            f"got {len(lines)}"
+        )
     if any(not line.strip() for line in lines):
         raise SystemExit("ERROR: each line must contain non-whitespace text")
-    if not 1 <= len(text) <= 400:
+    if any(line != line.rstrip() for line in lines):
+        raise SystemExit("ERROR: no line may end with trailing whitespace")
+    if not MIN_ENTRY_CHARS <= len(text) <= MAX_ENTRY_CHARS:
         raise SystemExit(
-            f"ERROR: entry must be 1-400 characters total, got {len(text)}"
+            f"ERROR: entry must be {MIN_ENTRY_CHARS}-{MAX_ENTRY_CHARS} "
+            f"characters total, got {len(text)}"
         )
 
 
